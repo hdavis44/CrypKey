@@ -7,9 +7,7 @@ BUCKET_NAME='wagon-data-745-fake-news-data'
 
 BUCKET_TRAIN_DATA_PATH='data/train.csv'
 
-LOCAL_TRAIN_DATA_PATH='''
-    /home/henry/code/hdavis44/detecting_fake_news/raw_data/train.csv
-'''
+LOCAL_TRAIN_DATA_PATH='<filepath><filename>'
 
 
 def get_cloud_data(nrows=None):
