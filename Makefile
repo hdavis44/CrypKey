@@ -28,6 +28,9 @@ clean:
 install:
 	@pip install . -U
 
+dev_install:
+	@pip install -e .
+
 all: clean install test black check_code
 
 count_lines:
