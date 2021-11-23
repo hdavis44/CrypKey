@@ -32,12 +32,13 @@ def predict(num1, num2):
     model.fit(X, y)
 
     # define one new instance
-    Xnew = pd.DataFrame(dict(num1=[int(num1)], num2=[int(num2)]))
+    Xnew = pd.DataFrame(dict(num1=[float(num1)], num2=[float(num2)]))
 
     # make a prediction
     ynew = model.predict(Xnew)
 
-    return dict(prediction=ynew[0])
+    ynew = int(ynew[0])
+    return {'prediction' :ynew}
 
 
 
@@ -52,5 +53,8 @@ def predict(num1, num2):
 #     #model from the GCP
 #     model= joblib.load('model.joblib')
 
+
 #     # make prediction with the model of the GCP
 #     results = model.predict(X)
+#     result=int(result[0])
+#    return {'prediction' :result}
