@@ -1,13 +1,7 @@
 from google.cloud import storage
 import pandas as pd
+from detecting_fake_news.params import BUCKET_NAME, BUCKET_TRAIN_DATA_PATH, LOCAL_TRAIN_DATA_PATH
 
-
-
-BUCKET_NAME='wagon-data-745-fake-news-data'
-
-BUCKET_TRAIN_DATA_PATH='data/train.csv'
-
-LOCAL_TRAIN_DATA_PATH='<filepath><filename>'
 
 
 def get_cloud_data(nrows=None):
