@@ -62,6 +62,10 @@ pypi:
 #               API
 # ----------------------------------
 
+PACKAGE_NAME=detecting_fake_news
+
+FILENAME=trainer
+
 run_api:
 	uvicorn api.fast:app --reload  # load web server with code autoreload
 
