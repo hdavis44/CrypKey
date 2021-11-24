@@ -2,6 +2,7 @@
 #          INSTALL & TEST
 # ----------------------------------
 install_requirements:
+	@pip install --upgrade pip
 	@pip install -r requirements.txt
 
 check_code:
@@ -43,6 +44,30 @@ count_lines:
 	@find ./tests -name '*.py' -exec  wc -l {} \; | sort -n| awk \
         '{printf "%4s %s\n", $$1, $$2}{s+=$$0}END{print s}'
 	@echo ''
+
+
+# ----------------------------------
+#      SETUP PROJECT-VIRTUAL ENV.
+# ----------------------------------
+virtualenv_create:
+	@pyenv virtualenv 3.8.12 fake_news
+	@pyenv local fake_news
+
+install_jupyter_notebook:
+	@pip install jupyterlab
+	@pip install jupyter-resource-usage
+	@pip install jupyter_contrib_nbextensions
+	@pip install nbresult
+	@pip install pandas-profiling
+	@pip install ipdb
+	@jupyter contrib nbextension install --user
+	@jupyter nbextension enable toc2/main
+	@jupyter nbextension enable collapsible_headings/main
+	@jupyter nbextension enable spellchecker/main
+	@jupyter nbextension enable code_prettify/code_prettify
+
+virtualenv_setup: virtualenv_create install_requirements install_jupyter_notebook
+
 
 # ----------------------------------
 #      UPLOAD PACKAGE TO PYPI
