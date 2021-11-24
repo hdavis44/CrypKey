@@ -1,17 +1,18 @@
 from google.cloud import storage
 import pandas as pd
+from detecting_fake_news.gcp import read_bucket_data
 from detecting_fake_news.params import BUCKET_NAME, BUCKET_TRAIN_DATA_PATH, LOCAL_TRAIN_DATA_PATH
+from detecting_fake_news.gcp import read_bucket_data
 
 
 
-def get_cloud_data(nrows=None):
+def get_cloud_data(nrows=None, data_file_name='train.csv'):
     '''method to get training data from google cloud bucket'''
     if nrows:
         print(f"getting {nrows} rows of cloud data")
     else:
         print("getting cloud data")
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}",
-                     nrows=nrows)
+    df = read_bucket_data(data_file_name, nrows)
     return df
 
 def get_local_data(nrows=None):
