@@ -47,7 +47,7 @@ app.add_middleware(
 #     return {'prediction' :ynew}
 
 
-
+'''
 @app.get("/predict")
 def predictt(text):
 
@@ -74,3 +74,28 @@ def predictt(text):
     results=int(results[0])
 
     return {'prediction' :results}
+'''
+
+
+
+##### testsssssssssss
+
+
+@app.get("/predict")
+def predictt(text):
+
+
+
+    text = TextPreprocessor().transform(text)
+
+    X = pd.DataFrame(dict(text=[text]))
+
+    #model from the GCP
+    model = joblib.load('model.joblib')
+
+    # make prediction with the model of the GCP
+    results = model.predict(X)
+
+    results = int(results[0])
+
+    return {'prediction': results}
