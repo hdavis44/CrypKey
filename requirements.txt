@@ -1,29 +1,32 @@
-# packaging
-pip>=9
-setuptools>=26
-twine
-wheel>=0.29
-
-# data science
-numpy
-pandas
-scikit-learn
-
-# tests/linter
-black
-coverage
-flake8
-pytest
-yapf
-
-# API
+pip
+setuptools
+twine==3.6.0
+wheel==0.37.0
+numpy==1.21.4
+pandas==1.3.4
+statsmodels==0.13.1
+scikit-learn==1.0.1
+tensorflow==2.7.0
+xgboost==1.5.0
+Unidecode==1.3.2
+nltk==3.6.5
+matplotlib==3.5.0
+seaborn==0.11.2
+plotly==5.4.0
+memoized-property==1.0.3
+pyyaml==6.0
+pylint==2.11.1
+autopep8==1.6.0
+fastapi==0.70.0
+uvicorn==0.15.0
+lxml==4.6.4
+beautifulsoup4==4.10.0
+streamlit==1.2.0
+mlflow==1.21.0
 gcsfs
-google-cloud-storage
-mlflow
 s3fs
-
-# utilities
-six>=1.14
-joblib
-memoized-property
-termcolor
+black
+coverage==6.1.2
+flake8==4.0.1
+pytest==6.2.5
+yapf==0.31.0
