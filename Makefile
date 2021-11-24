@@ -50,8 +50,8 @@ count_lines:
 #      SETUP PROJECT-VIRTUAL ENV.
 # ----------------------------------
 virtualenv_create:
-	@pyenv virtualenv 3.8.12 venv_fake_news
-	@pyenv local venv_fake_news
+	@pyenv virtualenv 3.8.12 fake_news
+	@pyenv local fake_news
 
 install_jupyter_notebook:
 	@pip install jupyterlab
