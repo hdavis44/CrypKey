@@ -55,8 +55,7 @@ def predict_cloud(text):
     model = joblib.load('../model.joblib')
     print('working 3', model)
 
-    prediction_local = read_bucket_model(PATH_TO_LOCAL_MODEL).predict(
-        clean_text)
+    prediction_local = read_bucket_model(PATH_TO_LOCAL_MODEL).predict(clean_text)
     print('working 4', prediction_local)
 
     results = int(prediction_local[0])
