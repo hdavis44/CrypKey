@@ -1,8 +1,8 @@
 import os
 from google.cloud import storage
 from termcolor import colored
-import joblib
-import tensorflow as tf
+# import joblib
+# import tensorflow as tf
 import pandas as pd
 
 from detecting_fake_news.params import BUCKET_NAME
@@ -40,11 +40,13 @@ def storage_download(model_directory, file_name):
 
 # ⭐️ Alternative model - simple, reading directly -
 # source: https://stackoverflow.com/questions/51921142/how-to-load-a-model-saved-in-joblib-file-from-google-cloud-storage-bucket
-def read_bucket_model(model_file_name):
-    gcp_model_path = f"gs://{BUCKET_NAME}/models/{model_file_name}"
 
-    loaded_model = joblib.load(tf.io.gfile.GFile(gcp_model_path, 'rb'))
-    return loaded_model
+
+#def read_bucket_model(model_file_name):
+#    gcp_model_path = f"gs://{BUCKET_NAME}/models/{model_file_name}"
+#
+#    loaded_model = joblib.load(tf.io.gfile.GFile(gcp_model_path, 'rb'))
+#    return loaded_model
 
 
 def read_bucket_data(data_file_name, nrows):
