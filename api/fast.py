@@ -1,23 +1,19 @@
 # $DELETE_BEGIN
-import pytz
 
+import os
 import pandas as pd
 import joblib
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import make_blobs
-
-from detecting_fake_news.preprocessing import *
-
-
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
+from detecting_fake_news.preprocessing import TextPreprocessor
 
 
 app = FastAPI()
+
+
+abspath = os.path.abspath("model.joblib")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,74 +24,27 @@ app.add_middleware(
 )
 
 
-#TEST of api localhost
-
-# @app.get("/predict")
-# def predict(num1, num2):
-#     X, y = make_blobs(n_samples=100, centers=2, n_features=2, random_state=1)
-#     # fit final model
-#     model = LogisticRegression()
-#     model.fit(X, y)
-
-#     # define one new instance
-#     Xnew = pd.DataFrame(dict(num1=[float(num1)], num2=[float(num2)]))
-
-#     # make a prediction
-#     ynew = model.predict(Xnew)
-
-#     ynew = int(ynew[0])
-#     return {'prediction' :ynew}
 
 
-'''
+
+
 @app.get("/predict")
 def predictt(text):
 
+    # text form strign to df
+    text = pd.DataFrame(dict(text=[text]))
 
-    X = pd.DataFrame(dict(text=[text]))
+    #clean text, remove punctuation, etc
+    clean_text = TextPreprocessor().transform(text)
 
-    text = TextPreprocessor().transform(X)
+    #load the model.joblib that is already train
+    model = joblib.load(abspath)
 
-    vectorizer = TfidfVectorizer(ngram_range=(2, 2)).fit(text)
+    # predict the model with the new text
+    prediction_local = model.predict(clean_text)
 
-    X_train_two_gram = vectorizer.transform(text)
+    # change the output type
+    results = int(prediction_local[0])
 
-    #text = text.apply(TextPreprocessor.clean_text())
-
-
-
-    #model from the GCP
-    model= joblib.load('model.joblib')
-
-
-    # make prediction with the model of the GCP
-    results = model.predict(X_train_two_gram)
-
-    results=int(results[0])
-
+    #api output
     return {'prediction' :results}
-'''
-
-
-
-##### testsssssssssss
-
-
-@app.get("/predict")
-def predictt(text):
-
-
-
-    text = TextPreprocessor().transform(text)
-
-    X = pd.DataFrame(dict(text=[text]))
-
-    #model from the GCP
-    model = joblib.load('model.joblib')
-
-    # make prediction with the model of the GCP
-    results = model.predict(X)
-
-    results = int(results[0])
-
-    return {'prediction': results}

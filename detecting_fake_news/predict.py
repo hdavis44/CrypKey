@@ -1,11 +1,11 @@
 import joblib
 import pandas as pd
-import os
-from detecting_fake_news.preprocessing import *
+
+from detecting_fake_news.preprocessing import TextPreprocessor
+from detecting_fake_news.params import BUCKET_NAME, PATH_TO_LOCAL_MODEL
 
 from google.cloud import storage
-from tempfile import TemporaryFile
-
+import tensorflow as tf
 
 
 # run the predict from the local model.joblib
@@ -34,12 +34,32 @@ def predict_local(text):
 #still in process
 # run the predict from the cloud model.joblib
 storage_client = storage.Client()
-bucket_name='<bucket name>'
-model_bucket='model.joblib'
 
-def predict_cloud():
-    bucket = storage_client.get_bucket(bucket_name)
-    #select bucket file
-    blob = bucket.blob(model_bucket)
-    #load that file from local file
-    model = joblib.load(model_bucket)
+
+#still in process
+def read_bucket_model(model_file_name):
+    gcp_model_path = f"gs://{BUCKET_NAME}/models/{model_file_name}"
+
+    loaded_model = joblib.load(tf.io.gfile.GFile(gcp_model_path, 'rb'))
+    return loaded_model
+
+
+#still in process
+def predict_cloud(text):
+    text = pd.DataFrame(dict(text=[text]))
+    print('working 1', text)
+
+    clean_text = TextPreprocessor().transform(text)
+    print('working 2', clean_text)
+
+    model = joblib.load('../model.joblib')
+    print('working 3', model)
+
+    prediction_local = read_bucket_model(PATH_TO_LOCAL_MODEL).predict(
+        clean_text)
+    print('working 4', prediction_local)
+
+    results = int(prediction_local[0])
+    print('working 5')
+
+    return results
