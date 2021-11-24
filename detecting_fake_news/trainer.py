@@ -12,17 +12,10 @@ from termcolor import colored
 
 
 
-
-
 ### TODO:
 
 # add MLFlow functionality?
 
-# create Trainer class with a pipeline attribute
-#   class methods:
-#       set_pipeline
-#       run--sets and fits to pipeline
-#       evaluate--evaluates on test data and returns accuracy
 
 
 class Trainer(object):
@@ -52,9 +45,8 @@ class Trainer(object):
         print("preprocessing data")
         preproc = TextPreprocessor()
         X_clean = preproc.transform(X)
-        X_train, X_test, y_train, y_test = train_test_split(X_clean,
-                                                            y,
-                                                            test_size=0.25)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X_clean, y, test_size=0.25)
         print("setting pipeline")
         self.set_pipeline()
         print("vectorizing data and fitting model")
