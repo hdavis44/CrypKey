@@ -7,15 +7,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from detecting_fake_news.preprocessing import TextPreprocessor
-#from detecting_fake_news.predict import read_bucket_model
-from detecting_fake_news.params import  PATH_TO_LOCAL_MODEL
+from detecting_fake_news.gcp import storage_download
+from detecting_fake_news.params import PATH_TO_LOCAL_MODEL, BUCKET_NAME
 
 
 
 app = FastAPI()
 
 
-abspath = os.path.abspath("model.joblib")
+
 
 
 app.add_middleware(
@@ -30,7 +30,7 @@ app.add_middleware(
 #api prediction with local model
 @app.get("/predict")
 def predictt(text):
-
+    abspath = os.path.abspath("model.joblib")
     # text form strign to df
     text = pd.DataFrame(dict(text=[text]))
 
@@ -53,23 +53,28 @@ def predictt(text):
 
 
 #api prediction with model in the cloud
-# @app.get("/predict_cloud")
-# def predictt(text):
 
-#     # text form strign to df
-#     text = pd.DataFrame(dict(text=[text]))
+@app.get("/predict_cloud")
+def predictt(text):
+    abspath = os.path.abspath("cloud_model.joblib")
 
-#     #clean text, remove punctuation, etc
-#     clean_text = TextPreprocessor().transform(text)
+    # text form strign to df
+    text = pd.DataFrame(dict(text=[text]))
 
-#     #load the model.joblib that is already train
-#     model = read_bucket_model(PATH_TO_LOCAL_MODEL)
+    #clean text, remove punctuation, etc
+    clean_text = TextPreprocessor().transform(text)
 
-#     # predict the model with the new text
-#     prediction_local = model.predict(clean_text)
+    #load the model.joblib that is already train
 
-#     # change the output type
-#     results = int(prediction_local[0])
+    storage_download('models/MultinomialNB/model.joblib', 'cloud_model.joblib')
 
-#     #api output
-#     return {'prediction': results}
+    model = joblib.load(abspath)
+
+    # predict the model with the new text
+    prediction_local = model.predict(clean_text)
+
+    # change the output type
+    results = int(prediction_local[0])
+
+    #api output
+    return {'prediction': results}
