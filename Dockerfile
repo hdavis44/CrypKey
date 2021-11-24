@@ -8,4 +8,9 @@ COPY requirements.txt /requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# need to run-download nltk data
+RUN python3 -m nltk.downloader punkt
+RUN python3 -m nltk.downloader wordnet
+RUN python3 -m nltk.downloader stopwords
+
 CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
