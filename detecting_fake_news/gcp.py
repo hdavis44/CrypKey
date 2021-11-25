@@ -14,9 +14,9 @@ from detecting_fake_news.params import BUCKET_NAME
 # INFO >  model_directory = 'models' and 'data'
 
 
-def storage_upload(model_directory, file_name, rm=False):
+def storage_upload(cloud_directory, file_name, rm=False):
     client = storage.Client().bucket(BUCKET_NAME)
-    storage_location = f"{model_directory}"
+    storage_location = f"{cloud_directory}"
     blob = client.blob(storage_location)
     blob.upload_from_filename(file_name)
     print(
@@ -27,9 +27,9 @@ def storage_upload(model_directory, file_name, rm=False):
         os.remove(file_name)
 
 
-def storage_download(model_directory, file_name):
+def storage_download(cloud_directory, file_name):
     client = storage.Client().bucket(BUCKET_NAME)
-    storage_location = f"{model_directory}"
+    storage_location = f"{cloud_directory}"
     blob = client.blob(storage_location)
     blob.download_to_filename(file_name)
     print(

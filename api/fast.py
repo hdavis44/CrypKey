@@ -1,22 +1,9 @@
-# $DELETE_BEGIN
-
-import os
-import pandas as pd
-import joblib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from detecting_fake_news.preprocessing import TextPreprocessor
-from detecting_fake_news.gcp import storage_download
-from detecting_fake_news.params import PATH_TO_LOCAL_MODEL, BUCKET_NAME
-
+from detecting_fake_news.predict import home_page_api, tester_api, predict_local_api, predict_cloud_api
 
 
 app = FastAPI()
-
-
-
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,55 +13,25 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+#api home, show the posible end points
+@app.get("/")
+def home():
+    return home_page_api()
+
+
+#api for testing, 2 numbers, and output the sum result
+@app.get("/test")
+def test(num1,num2):
+    return tester_api(num1, num2)
+
 
 #api prediction with local model
-@app.get("/predict")
-def predictt(text):
-    abspath = os.path.abspath("model.joblib")
-    # text form strign to df
-    text = pd.DataFrame(dict(text=[text]))
-
-    #clean text, remove punctuation, etc
-    clean_text = TextPreprocessor().transform(text)
-
-    #load the model.joblib that is already train
-    model = joblib.load(abspath)
-
-    # predict the model with the new text
-    prediction_local = model.predict(clean_text)
-
-    # change the output type
-    results = int(prediction_local[0])
-
-    #api output
-    return {'prediction' :results}
-
-
+@app.get("/predict_local")
+def predict_local(text):
+    return predict_local_api(text)
 
 
 #api prediction with model in the cloud
-
 @app.get("/predict_cloud")
-def predictt(text):
-    abspath = os.path.abspath("cloud_model.joblib")
-
-    # text form strign to df
-    text = pd.DataFrame(dict(text=[text]))
-
-    #clean text, remove punctuation, etc
-    clean_text = TextPreprocessor().transform(text)
-
-    #load the model.joblib that is already train
-
-    storage_download('models/MultinomialNB/model.joblib', 'cloud_model.joblib')
-
-    model = joblib.load(abspath)
-
-    # predict the model with the new text
-    prediction_local = model.predict(clean_text)
-
-    # change the output type
-    results = int(prediction_local[0])
-
-    #api output
-    return {'prediction': results}
+def predict_cloud(text):
+    return predict_cloud_api(text)
