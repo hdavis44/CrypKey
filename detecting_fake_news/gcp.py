@@ -50,6 +50,14 @@ def storage_download(cloud_directory, file_name):
 
 
 def read_bucket_data(data_file_name, nrows):
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/data/{data_file_name}",
-                     nrows=nrows)
-    return df
+    try:
+        df = pd.read_csv(f"gs://{BUCKET_NAME}/data/{data_file_name}",
+                         nrows=nrows)
+        if nrows:
+            print(colored(f"{nrows} rows loaded from gs://{BUCKET_NAME}/data/{data_file_name}","green"))
+        else:
+            print(colored(f"data loaded from gs://{BUCKET_NAME}/data/{data_file_name}","green"))
+        return df
+    except FileNotFoundError:
+        print(colored(f"{data_file_name} not found in gs://{BUCKET_NAME}/data", "red"))
+        return None
