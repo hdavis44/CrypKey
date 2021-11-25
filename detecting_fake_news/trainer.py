@@ -41,7 +41,9 @@ class Trainer(object):
                          ('nbmodel', MultinomialNB())])
         self.pipe = pipe
 
-    def run(self, df):
+    def run(self, df, preprocessed=False,
+            new_line=True, punct=True, lower=True, accent=True,
+            numbers=True, stemm=False, lemm=True, stop_words=True):
         '''accepts a dataframe; preprocesses and splits data into train/test;
            fits a pipeline to X_train, y_train; evaluates on X_test, y_test;
            prints an accuracy score'''
@@ -49,13 +51,19 @@ class Trainer(object):
         df = df.dropna(subset=[self.X_col])
         X = df[[self.X_col]]
         y = df[self.y_col]
-        print("preprocessing data with following parameters:")
-        preproc = TextPreprocessor()
-        for k, v in vars(preproc).items():
-            if v == True:
-                print(f"{k}, ", end='')
-        print('')
-        X_clean = preproc.transform(X)
+        if preprocessed == False:
+            preproc = TextPreprocessor(new_line=new_line, punct=punct,
+                                       lower=lower, accent=accent,
+                                       numbers=numbers, stemm=stemm,
+                                       lemm=lemm, stop_words=stop_words)
+            print("preprocessing data with following parameters:")
+            for k, v in vars(preproc).items():
+                if v == True:
+                    print(f"{k}, ", end='')
+            print('')
+            X_clean = preproc.transform(X)
+        else:
+            X_clean = X
         X_train, X_test, y_train, y_test = train_test_split(
             X_clean, y, test_size=0.25)
         print("setting pipeline")
