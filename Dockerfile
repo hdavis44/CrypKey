@@ -4,13 +4,10 @@ COPY api /api
 COPY detecting_fake_news /detecting_fake_news
 COPY model.joblib /model.joblib
 COPY requirements.txt /requirements.txt
+# Hard copy the nltk_data
+COPY ./nltk_data /usr/local/nltk_data
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-
-# need to run-download nltk data
-RUN python3 -m nltk.downloader punkt
-RUN python3 -m nltk.downloader wordnet
-RUN python3 -m nltk.downloader stopwords
 
 CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
