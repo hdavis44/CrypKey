@@ -30,8 +30,8 @@ MODEL_FOLDER = 'models'
 # /!\ here you need to decide if you are going to train using the provided and uploaded data/train_1k.csv sample file
 # or if you want to use the full dataset (you need need to upload it first of course)
 BUCKET_TRAIN_DATA_PATH = 'data/train.csv'
-LOCAL_TRAIN_DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'raw_data'))
-
+LOCAL_TRAIN_DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'../','raw_data'))
+PREPROCESSED_DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'../','detecting_fake_news','data'))
 
 ##### Training  - - - - - - - - - - - - - - - - - - - - - -
 
