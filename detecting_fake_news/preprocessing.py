@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-from nltk.tokenize import word_tokenize
+# from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
 import unidecode
@@ -94,7 +94,8 @@ Return depends on input:
             text = unidecode.unidecode(text)
 
         # Tokenize --> (make word list) -> useful for following operation
-        token_text = word_tokenize(text)
+        # token_text = word_tokenize(text)
+        token_text = text.split()
 
         if self.numbers:  # Remove numbers
             token_text = [word for word in token_text if word.isalpha()]
