@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from detecting_fake_news.predict import home_page_api, tester_api, predict_local_api, predict_cloud_api
 
@@ -35,3 +35,11 @@ def predict_local(text):
 @app.get("/predict_cloud")
 def predict_cloud(text):
     return predict_cloud_api(text)
+
+
+#api prediction for extension
+@app.post("/predict_cloud")
+def predict_extension(author: str = Body(...),
+                      content: str = Body(...),
+                      url: str = Body(...)) -> None:
+    return predict_cloud_api(content)
