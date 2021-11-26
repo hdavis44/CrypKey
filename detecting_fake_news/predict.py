@@ -11,11 +11,15 @@ from detecting_fake_news.gcp import storage_download
 def home_page_api():
     return {
         '/test':
-        'For testing if the API is working, add 2 parameter. num1=NUMBER, num2=NUMBER',
+        'For testing if the API is working, add 2 parameter. num1=NUMBER, num2=NUMBER, retrun the sum of both numbers',
         '/predict_local':
-        'For running the API using the model stored localy, add 1 parameter. text=TEXT',
+        'For running the API using the model stored localy, add 1 parameter. text=TEXT, return 1=fake or 0=real',
         '/predict_cloud':
-        'For running the API using the model from the cloud, add 1 parameter. text=TEXT'
+        'For running the API using the model from the cloud, add 1 parameter. text=TEXT, return 1=fake or 0=real',
+        '/predict_proba_local':
+        'For running the API using the model stored localy, add 1 parameter. text=TEXT, return proba of fake',
+        '/predict_proba_cloud':
+        'For running the API using the model from the cloud, add 1 parameter. text=TEXT, return proba of fake'
     }
 
 
@@ -68,6 +72,65 @@ def predict_cloud_api(text):
 
     # change the output type
     results = int(prediction_local[0])
+
+    #api output
+    return {'prediction': results}
+
+
+    ###### PROBA ######
+
+
+#function that make the api prdict proba local page, it is used in fast.py
+def predict_local_prob_api(text):
+    abspath = os.path.abspath("model.joblib")
+    # text form strign to df
+    text = pd.DataFrame(dict(text=[text]))
+
+    #clean text, remove punctuation, etc
+    clean_text = TextPreprocessor().transform(text)
+
+    #load the model.joblib that is already train
+    model = joblib.load(abspath)
+
+    # predict the model with the new text
+    prediction_local = model.predict_proba(clean_text)
+
+    # change the output type
+    prova_dict= dict(enumerate(prediction_local.flatten(), 1))
+    probability_fake= prova_dict[2]
+
+    #probability of the text beign fake
+    results = probability_fake
+
+    #api output
+    return {'prediction': results}
+
+
+#function that make the api predict proba cloud page, it is used in fast.py
+def predict_cloud_proba_api(text):
+    abspath = os.path.abspath("cloud_model.joblib")
+
+    # text form strign to df
+    text = pd.DataFrame(dict(text=[text]))
+
+    #clean text, remove punctuation, etc
+    clean_text = TextPreprocessor().transform(text)
+
+    #load the model.joblib that is already train
+
+    storage_download('models/MultinomialNB/model.joblib', 'cloud_model.joblib')
+
+    model = joblib.load(abspath)
+
+    # predict the model with the new text
+    prediction_local = model.predict_proba(clean_text)
+
+    # change the output type
+    prova_dict = dict(enumerate(prediction_local.flatten(), 1))
+    probability_fake = prova_dict[2]
+
+    #probability of the text beign fake
+    results = probability_fake
 
     #api output
     return {'prediction': results}

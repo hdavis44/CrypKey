@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
-from detecting_fake_news.predict import home_page_api, tester_api, predict_local_api, predict_cloud_api
+from detecting_fake_news.predict import home_page_api, tester_api, predict_local_api, predict_cloud_api, predict_cloud_proba_api, predict_local_prob_api
 
 
 app = FastAPI()
@@ -37,9 +37,24 @@ def predict_cloud(text):
     return predict_cloud_api(text)
 
 
+#### PROBA  #####
+
+
+#api prediction with local model
+@app.get("/predict_proba_local")
+def predict_local(text):
+    return predict_local_prob_api(text)
+
+
+#api prediction with model in the cloud
+@app.get("/predict_proba_cloud")
+def predict_cloud(text):
+    return predict_cloud_proba_api(text)
+
+
 #api prediction for extension
 @app.post("/predict_cloud")
 def predict_extension(author: str = Body(...),
                       content: str = Body(...),
                       url: str = Body(...)) -> None:
-    return predict_cloud_api(content)
+    return predict_cloud_proba_api(content)
