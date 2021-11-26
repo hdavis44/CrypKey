@@ -71,6 +71,7 @@ class Trainer(object):
            prints an accuracy score'''
         if self.preprocessed == False:
             self.preprocess()
+        self.data = self.data.dropna(subset=[self.X_col])
         X_clean = self.data[self.X_col]
         y = self.data[self.y_col]
         X_train, X_test, y_train, y_test = train_test_split(X_clean, y, test_size=0.25)
