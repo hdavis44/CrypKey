@@ -28,7 +28,7 @@ def get_local_data(data_file_name='train.csv', nrows=None):
         return None
 
 
-def get_preprocessed_data(data_file_name='preproc.csv', nrows=None):
+def get_preprocessed_data(data_file_name='preproc_train.csv', nrows=None):
     '''method for getting preprocessed data from local machine'''
     abspath = os.path.join(PREPROCESSED_DATA_PATH, data_file_name)
     try:
