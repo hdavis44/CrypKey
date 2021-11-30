@@ -5,6 +5,7 @@ import os
 from detecting_fake_news.preprocessing import TextPreprocessor
 # from detecting_fake_news.params import BUCKET_NAME, PATH_TO_LOCAL_MODEL
 from detecting_fake_news.gcp import storage_download
+from detecting_fake_news.engineering import get_extended_eng_features_df
 
 
 #function that make the api home page, it is used in fast.py
@@ -117,7 +118,6 @@ def predict_cloud_proba_api(text):
     clean_text = TextPreprocessor().transform(text)
 
     #load the model.joblib that is already train
-
     storage_download('models/MultinomialNB/model.joblib', 'cloud_model.joblib')
 
     model = joblib.load(abspath)
@@ -134,3 +134,64 @@ def predict_cloud_proba_api(text):
 
     #api output
     return {'prediction': results}
+
+
+## GET PREDICTIONS FROM ALL MODELS
+def predict_all(text):
+    '''
+    Get predictions from ALL models.
+    - will clean text, ready for standards models
+    - will create engineered features, for eng.feat. model
+    - load models
+    - make all predictions
+    - make "total" weighted average prediction
+
+    RETURN:
+    Dictionary:
+        - with all respective predictions + probabilities
+        - total prediction + probability
+    '''
+    # text from string to pd.Series
+    text = pd.Series(text)
+
+    # Standard Preprocessing
+    clean_text = TextPreprocessor().transform(text)
+
+    # Get Extended Engineered Features
+    eng_feat = get_extended_eng_features_df(raw_text=text, preproc_text=clean_text)
+
+    # Load & Predict: MULTINOMIAL
+    storage_download('models_prod/multinomial_model.joblib',
+                     'multinomial_model.joblib')
+    print('* HAVE I PASSED THIS ??')
+    abspath = os.path.abspath("multinomial_model.joblib")
+    print(abspath)
+    multinomial_model = joblib.load(abspath)
+
+    proba_multinomial = multinomial_model.predict_proba(clean_text)
+    proba_multinomial = float(proba_multinomial[0][1])
+    pred_multinomial = 1 if proba_multinomial >= 0.5 else 0
+
+    # Load & Predict: FEATURE ENGINEERING
+    storage_download('models_prod/feat_eng_model.joblib',
+                     'feat_eng_model.joblib')
+    abspath = os.path.abspath("feat_eng_model.joblib")
+    print(abspath)
+    feat_eng_model = joblib.load(abspath)
+
+    proba_feat_eng = feat_eng_model.predict_proba(eng_feat)
+    proba_feat_eng = float(proba_feat_eng[0][1])
+    pred_feat_eng = 1 if proba_feat_eng >= 0.5 else 0
+
+    # Make weighted mean prediction
+    wm_proba = (95 * proba_multinomial + 80 * proba_feat_eng) / (95 + 80)
+    wm_pred = 1 if wm_proba >= 0.5 else 0
+
+    return {
+        'multinomial_pred': pred_multinomial,
+        'multinomial_proba': proba_multinomial,
+        'feat_eng_pred': pred_feat_eng,
+        'feat_eng_proba': proba_feat_eng,
+        'mean_pred': wm_pred,
+        'mean_proba': wm_proba,
+    }

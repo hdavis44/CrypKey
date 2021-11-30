@@ -8,3 +8,4 @@ raw_data/
 **/__pycache__/
 .env
 notebooks_private/*
+*.joblib
