@@ -76,12 +76,16 @@ def predict_engineered(text):
             'probability_fake': float(probability)}
 
 
-# API prediction for ALL models, fetching model from the cloud
+# API prediction for ALL MODELS, fetching modes from the CLOUD
 @app.get("/predict_all_cloud")
 def predict_all_cloud(text):
-    return predict_all(text)
+    return predict_all(text, source='cloud')
 
 
+# API prediction for ALL MODELS, fetching modes from LOCAL disk
+@app.get("/predict_all_local")
+def predict_all_local(text):
+    return predict_all(text, source='local')
 
 
 if __name__ == '__main__':
@@ -94,4 +98,4 @@ US stock futures were also pointing to a higher open on Wall Street, after the D
 Oil prices were recovering, too. Brent crude, the global benchmark, was up more than 3% to $75 a barrel, and US crude jumped 4% to trade above $71.
     """
 
-    print(predict_all_cloud(test_txt))
+    print(predict_all_local(test_txt))
