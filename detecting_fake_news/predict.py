@@ -7,7 +7,6 @@ from detecting_fake_news.preprocessing import TextPreprocessor
 from detecting_fake_news.gcp import storage_download
 from detecting_fake_news.engineering import get_extended_eng_features_df
 
-
 #function that make the api home page, it is used in fast.py
 def home_page_api():
     return {
@@ -163,7 +162,6 @@ def predict_all(text):
     # Load & Predict: MULTINOMIAL
     storage_download('models_prod/multinomial_model.joblib',
                      'multinomial_model.joblib')
-    print('* HAVE I PASSED THIS ??')
     abspath = os.path.abspath("multinomial_model.joblib")
     print(abspath)
     multinomial_model = joblib.load(abspath)
