@@ -1,9 +1,16 @@
 import pandas as pd
 import numpy as np
 from termcolor import colored
+import time
+
+start_time = time.time()
 import spacy
+time_diff = round((time.time() - start_time), 4)
+print(colored(f'* Importing SPACY took {time_diff} sec.', 'blue'))
+
 from detecting_fake_news.preprocessing import TextPreprocessor
 from detecting_fake_news.data import get_local_data
+
 
 # https://spacy.io/
 # pip install spacy==3.2.0
@@ -101,9 +108,14 @@ def get_engineered_df(raw_text:pd.Series):
         'verb_richness', 'adjs', 'adj_richness', 'stopws', 'stopw_richness',
         'vocab_richness', 'nums', 'symbs', 'alpha_chrs'
     ]
+    start_time = time.time()
+
     engineered = raw_text.apply(spacy_function)
     df_engineered = engineered.str.split(" ", expand=True,)
     df_engineered.columns = headers
+
+    time_diff = round((time.time() - start_time), 4)
+    print(colored(f'* running the SPACY feat.eng. took {time_diff} sec.', 'blue'))
 
     return df_engineered
 
