@@ -128,3 +128,37 @@ BUCKET_FILE_NAME=$(shell basename ${LOCAL_PATH})
 upload_data:
 	# @gsutil cp train_1k.csv gs://wagon-ml-my-bucket-name/data/train_1k.csv
 	@gsutil cp ${LOCAL_PATH} gs://${BUCKET_NAME}/${BUCKET_FOLDER}/${BUCKET_FILE_NAME}
+
+
+# ----------------------------------
+#      UPDATE DOCKER IMAGE & DEPLOY
+# ----------------------------------
+
+PROJECT_ID := detecting-fake-news
+DOCKER_IMAGE_NAME := detect-fake-news-api
+
+docker_echo:
+	@echo PROJECT_ID: ${PROJECT_ID}
+	@echo DOCKER_IMAGE_NAME: ${DOCKER_IMAGE_NAME}
+
+docker_build:
+	@docker build -t eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} .
+
+docker_test:
+	@docker run -e PORT=8000 -p 8000:8000 eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+# To close running image:
+# > docker ps
+# Copy CONTAINER_ID
+# > docker stop <COMTAINER_ID>
+
+docker_push:
+	@docker push eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+
+# Added first ${DOCKER_IMAGE_NAME} so we dont manually need to confirm/type it
+# After we ones changed the memory size for image on Cloud Rune - it remembers..
+docker_deploy:
+	@gcloud run deploy ${DOCKER_IMAGE_NAME} --image eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} --platform managed --region europe-west1
+# @gcloud run deploy --image eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} --platform managed --memory 1024Mi --region europe-west1
+
+# A complete Build + Push + Deploy maker - NOTE! process without testing
+docker_bpd: docker_build docker_push docker_deploy
