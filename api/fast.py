@@ -98,4 +98,4 @@ US stock futures were also pointing to a higher open on Wall Street, after the D
 Oil prices were recovering, too. Brent crude, the global benchmark, was up more than 3% to $75 a barrel, and US crude jumped 4% to trade above $71.
     """
 
-    print(predict_all_local(test_txt))
+    print(predict_all_cloud(test_txt))

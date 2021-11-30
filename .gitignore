@@ -9,4 +9,3 @@ raw_data/
 .env
 notebooks_private/*
 *.joblib
-*.pb
