@@ -2,8 +2,8 @@ FROM python:3.8.12-buster
 
 COPY api /api
 COPY detecting_fake_news /detecting_fake_news
-#COPY model.joblib /model.joblib
-#COPY model.joblib /model_feat_eng.joblib
+# Hard copy the files needed for the LSTM model
+COPY LSTM_model /LSTM_model
 COPY requirements.txt /requirements.txt
 # Hard copy the nltk_data
 COPY ./nltk_data /usr/local/nltk_data
