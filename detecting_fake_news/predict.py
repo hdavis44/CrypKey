@@ -136,7 +136,7 @@ def predict_cloud_proba_api(text):
 
 
 ## GET PREDICTIONS FROM ALL MODELS
-def predict_all(text):
+def predict_all(text, source='cloud'):
     '''
     Get predictions from ALL models.
     - will clean text, ready for standards models
@@ -159,24 +159,24 @@ def predict_all(text):
     # Get Extended Engineered Features
     eng_feat = get_extended_eng_features_df(raw_text=text, preproc_text=clean_text)
 
-    # Load & Predict: MULTINOMIAL
-    storage_download('models_prod/multinomial_model.joblib',
-                     'multinomial_model.joblib')
-    abspath = os.path.abspath("multinomial_model.joblib")
-    print(abspath)
-    multinomial_model = joblib.load(abspath)
+    # Load all the models
+    models = {
+        'multinomial': 'multinomial_model.joblib',
+        'feat_eng': 'feat_eng_model.joblib'
+    }
+    if source == 'cloud':
+        for model in models.values():
+            storage_download(f'models_prod/{model}', model)
 
+    multinomial_model = joblib.load(os.path.abspath(models['multinomial']))
+    feat_eng_model = joblib.load(os.path.abspath(models['feat_eng']))
+
+    # Predict: MULTINOMIAL
     proba_multinomial = multinomial_model.predict_proba(clean_text)
     proba_multinomial = float(proba_multinomial[0][1])
     pred_multinomial = 1 if proba_multinomial >= 0.5 else 0
 
-    # Load & Predict: FEATURE ENGINEERING
-    storage_download('models_prod/feat_eng_model.joblib',
-                     'feat_eng_model.joblib')
-    abspath = os.path.abspath("feat_eng_model.joblib")
-    print(abspath)
-    feat_eng_model = joblib.load(abspath)
-
+    # Predict: FEATURE ENGINEERING
     proba_feat_eng = feat_eng_model.predict_proba(eng_feat)
     proba_feat_eng = float(proba_feat_eng[0][1])
     pred_feat_eng = 1 if proba_feat_eng >= 0.5 else 0
