@@ -199,7 +199,7 @@ def predict_all(text, source='cloud'):
     X_pad = pad_sequences(X_token, dtype='float32', padding='post', maxlen=500)
 
     # Predict: LSTM
-    proba_LSTM = LSTM_model.predict(X_pad)[0][1]
+    proba_LSTM = float(LSTM_model.predict(X_pad)[0][1])
     pred_LSTM = 1 if proba_LSTM >= 0.5 else 0
 
     # Make weighted mean prediction
@@ -218,6 +218,6 @@ def predict_all(text, source='cloud'):
         'feat_eng_proba': proba_feat_eng,
         'LSTM_proba': proba_LSTM,
         'LSTM_pred': pred_LSTM,
-        'mean_pred': wm_pred,
         'mean_proba': wm_proba,
+        'mean_pred': wm_pred,
     }
