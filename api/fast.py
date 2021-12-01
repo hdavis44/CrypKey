@@ -98,4 +98,10 @@ US stock futures were also pointing to a higher open on Wall Street, after the D
 Oil prices were recovering, too. Brent crude, the global benchmark, was up more than 3% to $75 a barrel, and US crude jumped 4% to trade above $71.
     """
 
-    print(predict_all_cloud(test_txt))
+    #print("\n\n * PREDICTIONS:\n", predict_all_local(test_txt))
+
+    response = predict_all_local(test_txt)
+    # response = predict_all_cloud(test_txt)
+
+    for key, value in response.items():
+        print(key, '- of type:', type(value))

@@ -161,4 +161,4 @@ docker_deploy:
 # @gcloud run deploy --image eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} --platform managed --memory 1024Mi --region europe-west1
 
 # A complete Build + Push + Deploy maker - NOTE! process without testing
-docker_bpd: docker_build docker_push docker_deploy
+docker_build_push_deploy: docker_build docker_push docker_deploy

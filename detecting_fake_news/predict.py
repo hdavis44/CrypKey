@@ -166,7 +166,8 @@ def predict_all(text, source='cloud'):
     models = {
         'multinomial': 'multinomial_model.joblib',
         'feat_eng': 'feat_eng_model.joblib',
-        'LSTM_tokenizer': 'LSTM_tokenizer.joblib'
+        'LSTM_tokenizer': 'LSTM_tokenizer.joblib',
+        'xgboost': 'xgboost_model.joblib'
     }
     if source == 'cloud':
         for model in models.values():
@@ -174,6 +175,7 @@ def predict_all(text, source='cloud'):
 
     multinomial_model = joblib.load(os.path.abspath(models['multinomial']))
     feat_eng_model = joblib.load(os.path.abspath(models['feat_eng']))
+    xgboost_model = joblib.load(os.path.abspath(models['xgboost']))
     LSTM_model = load_model(os.path.abspath('LSTM_model'))
     LSTM_tokenizer = joblib.load(os.path.abspath(models['LSTM_tokenizer']))
 
@@ -187,25 +189,35 @@ def predict_all(text, source='cloud'):
     proba_feat_eng = float(proba_feat_eng[0][1])
     pred_feat_eng = 1 if proba_feat_eng >= 0.5 else 0
 
+    # Predict: XGBOOST
+    proba_xgboost = xgboost_model.predict_proba(clean_text)
+    proba_xgboost = float(proba_xgboost[0][1])
+    pred_xgboost = 1 if proba_xgboost >= 0.5 else 0
+
     # Get LSTM features
     X_token = LSTM_tokenizer.texts_to_sequences(clean_text)
     X_pad = pad_sequences(X_token, dtype='float32', padding='post', maxlen=500)
 
     # Predict: LSTM
-    proba_LSTM = LSTM_model.predict(X_pad)[0][1]
+    proba_LSTM = float(LSTM_model.predict(X_pad)[0][1])
     pred_LSTM = 1 if proba_LSTM >= 0.5 else 0
 
     # Make weighted mean prediction
-    wm_proba = (95 * proba_multinomial + 80 * proba_feat_eng + 98 * proba_LSTM) / (95 + 80 + 98)
+    wm_proba = (95 * proba_multinomial +
+                90 * proba_xgboost +
+                80 * proba_feat_eng +
+                98 * proba_LSTM) / (95 + 90 + 80 + 98)
     wm_pred = 1 if wm_proba >= 0.5 else 0
 
     return {
         'multinomial_pred': pred_multinomial,
         'multinomial_proba': proba_multinomial,
+        'xgboost_pred': pred_xgboost,
+        'xgboost_proba': proba_xgboost,
         'feat_eng_pred': pred_feat_eng,
         'feat_eng_proba': proba_feat_eng,
         'LSTM_proba': proba_LSTM,
         'LSTM_pred': pred_LSTM,
-        'mean_pred': wm_pred,
         'mean_proba': wm_proba,
+        'mean_pred': wm_pred,
     }
