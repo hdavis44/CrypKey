@@ -55,14 +55,6 @@ def predict_cloud(text):
     return predict_cloud_proba_api(text)
 
 
-#api prediction for extension
-@app.post("/predict_cloud")
-def predict_extension(author: str = Body(...),
-                      content: str = Body(...),
-                      url: str = Body(...)) -> None:
-    return predict_all(content, source='local')
-
-
 ## Test API endpoints for feature engineering prediction
 @app.get("/predict_from_engineering")
 def predict_engineered(text):
@@ -76,13 +68,21 @@ def predict_engineered(text):
             'probability_fake': float(probability)}
 
 
-# API prediction for ALL MODELS, fetching modes from the CLOUD
+#API-POST : Prediction for Extension
+@app.post("/predict_cloud")
+def predict_extension(author: str = Body(...),
+                      content: str = Body(...),
+                      url: str = Body(...)) -> None:
+    return predict_all(content, source='local')
+
+
+# API-GET Prediction for ALL MODELS, fetching modes from the CLOUD
 @app.get("/predict_all_cloud")
 def predict_all_cloud(text):
     return predict_all(text, source='cloud')
 
 
-# API prediction for ALL MODELS, fetching modes from LOCAL disk
+# API-GET Prediction for ALL MODELS, fetching modes from LOCAL disk
 @app.get("/predict_all_local")
 def predict_all_local(text):
     return predict_all(text, source='local')
@@ -90,13 +90,11 @@ def predict_all_local(text):
 
 if __name__ == '__main__':
     test_txt = r"""
-Stocks in Asia fell on Monday while European markets and US futures edged higher as investors continued to digest news about a new Covid-19 variant.
-
-Japan's Nikkei 225 (N225) was down about 1.6%, while Hong Kong's Hang Seng Index (HSI) had dipped about 1% by 3.30 a.m. ET. China's Shanghai Composite (SHCOMP) was flat.
-European markets opened higher, rebounding slightly from heavy losses on Friday, when the emergence of the Omicron variant shook global markets. In early trade, London's FTSE 100 (UKX) index was up more than 1%, with the French CAC 40 (CAC40) and the German DAX (DAX) seeing similar gains.
-US stock futures were also pointing to a higher open on Wall Street, after the Dow suffered its worst day in over a year on Friday.
-Oil prices were recovering, too. Brent crude, the global benchmark, was up more than 3% to $75 a barrel, and US crude jumped 4% to trade above $71.
-    """
+Alvin McCallister, 72, was found on a small rocky islet 200 miles off the nearest coastline where he shipwrecked two weeks ago and managed to survive off of several seagulls, mussels, and urchins.
+McCallister, for whom doctors do not fear for his life, was found suffering from intense hallucinations possibly caused by dehydration and the toxins of unidentified mussels he consumed on the small islet.
+McCallister, who is believed to have ingurgitated some form of toxin such as lead or mercury found in dangerous quantities in certain varieties of mussels he possibly consumed, is still under psychiatric evaluation.
+“Although Mr. McCallister does present abnormal injuries and inflammation to the genital and anal area, it is highly unlikely that he was sexually exploited or sodomized by living sea creatures and these are possibly self-inflicted” explained one medical expert.
+Although McCallister’s mental state is presently unstable, doctors believe he should heal completely in the weeks to come after his body has expurgated the dangerous levels of toxins he has been exposed to.    """
 
     #print("\n\n * PREDICTIONS:\n", predict_all_local(test_txt))
 
