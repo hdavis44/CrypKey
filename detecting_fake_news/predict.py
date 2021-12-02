@@ -195,7 +195,7 @@ def predict_all(text, source='cloud'):
     proba_xgboost = float(proba_xgboost[0][1])
     pred_xgboost = 1 if proba_xgboost >= 0.5 else 0
 
-    # Preprocess LSTM features
+    # Preprocess: LSTM features
     X_token = LSTM_tokenizer.texts_to_sequences(clean_text)
     X_pad = pad_sequences(X_token, dtype='float32', padding='post', maxlen=500)
 
