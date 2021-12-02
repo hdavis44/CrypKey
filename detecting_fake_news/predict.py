@@ -167,6 +167,7 @@ def predict_all(text, source='cloud'):
         'multinomial': 'multinomial_model.joblib',
         'feat_eng': 'feat_eng_model.joblib',
         'LSTM_tokenizer': 'LSTM_tokenizer.joblib',
+        'LSTM_model': 'LSTM_model.h5',
         'xgboost': 'xgboost_model.joblib'
     }
     if source == 'cloud':
@@ -176,7 +177,7 @@ def predict_all(text, source='cloud'):
     multinomial_model = joblib.load(os.path.abspath(models['multinomial']))
     feat_eng_model = joblib.load(os.path.abspath(models['feat_eng']))
     xgboost_model = joblib.load(os.path.abspath(models['xgboost']))
-    LSTM_model = load_model(os.path.abspath('LSTM_model'))
+    LSTM_model = load_model(os.path.abspath(models['LSTM_model']))
     LSTM_tokenizer = joblib.load(os.path.abspath(models['LSTM_tokenizer']))
 
     # Predict: MULTINOMIAL
@@ -194,7 +195,7 @@ def predict_all(text, source='cloud'):
     proba_xgboost = float(proba_xgboost[0][1])
     pred_xgboost = 1 if proba_xgboost >= 0.5 else 0
 
-    # Get LSTM features
+    # Preprocess LSTM features
     X_token = LSTM_tokenizer.texts_to_sequences(clean_text)
     X_pad = pad_sequences(X_token, dtype='float32', padding='post', maxlen=500)
 
@@ -203,10 +204,10 @@ def predict_all(text, source='cloud'):
     pred_LSTM = 1 if proba_LSTM >= 0.5 else 0
 
     # Make weighted mean prediction
-    wm_proba = (95 * proba_multinomial +
+    wm_proba = (90 * proba_multinomial +
                 90 * proba_xgboost +
                 80 * proba_feat_eng +
-                98 * proba_LSTM) / (95 + 90 + 80 + 98)
+                90 * proba_LSTM) / (90 + 90 + 80 + 90)
     wm_pred = 1 if wm_proba >= 0.5 else 0
 
     return {
@@ -216,8 +217,8 @@ def predict_all(text, source='cloud'):
         'xgboost_proba': proba_xgboost,
         'feat_eng_pred': pred_feat_eng,
         'feat_eng_proba': proba_feat_eng,
-        'LSTM_proba': proba_LSTM,
         'LSTM_pred': pred_LSTM,
-        'mean_proba': wm_proba,
+        'LSTM_proba': proba_LSTM,
         'mean_pred': wm_pred,
+        'mean_proba': wm_proba,
     }
