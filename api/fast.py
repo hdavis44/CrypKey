@@ -16,60 +16,53 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-#api home, show the posible end points
+#API HOME : Show the possible end-points
 @app.get("/")
 def home():
     return home_page_api()
 
 
-#api for testing, 2 numbers, and output the sum result
+#API-GET : For testing, 2 numbers, and output the sum result
 @app.get("/test")
 def test(num1,num2):
     return tester_api(num1, num2)
 
 
-#api prediction with local model
-@app.get("/predict_local")
-def predict_local(text):
-    return predict_local_api(text)
+# #api prediction with local model
+# @app.get("/predict_local")
+# def predict_local(text):
+#     return predict_local_api(text)
 
+# #api prediction with model in the cloud
+# @app.get("/predict_cloud")
+# def predict_cloud(text):
+#     return predict_cloud_api(text)
 
-#api prediction with model in the cloud
-@app.get("/predict_cloud")
-def predict_cloud(text):
-    return predict_cloud_api(text)
+# #### PROBA  #####
 
+# #api prediction with local model
+# @app.get("/predict_proba_local")
+# def predict_local(text):
+#     return predict_local_prob_api(text)
 
-#### PROBA  #####
+# #api prediction with model in the cloud
+# @app.get("/predict_proba_cloud")
+# def predict_cloud(text):
+#     return predict_cloud_proba_api(text)
 
-
-#api prediction with local model
-@app.get("/predict_proba_local")
-def predict_local(text):
-    return predict_local_prob_api(text)
-
-
-#api prediction with model in the cloud
-@app.get("/predict_proba_cloud")
-def predict_cloud(text):
-    return predict_cloud_proba_api(text)
-
-
-## Test API endpoints for feature engineering prediction
-@app.get("/predict_from_engineering")
-def predict_engineered(text):
-
-    X = get_engineered_df_from_text(text)
-    model = joblib.load('model_feat_eng.joblib')
-    prediction = model.predict(X)[0]
-    probability = model.predict_proba(X)[0][1]
-
-    return {'prediction': int(prediction),
-            'probability_fake': float(probability)}
+# ## Test API endpoints for feature engineering prediction
+# @app.get("/predict_from_engineering")
+# def predict_engineered(text):
+#     X = get_engineered_df_from_text(text)
+#     model = joblib.load('model_feat_eng.joblib')
+#     prediction = model.predict(X)[0]
+#     probability = model.predict_proba(X)[0][1]
+#     return {'prediction': int(prediction),
+#             'probability_fake': float(probability)}
 
 
 #API-POST : Prediction for Extension
-@app.post("/predict_cloud")
+@app.post("/predict_all_post")
 def predict_extension(author: str = Body(...),
                       content: str = Body(...),
                       url: str = Body(...)) -> None:
