@@ -60,7 +60,7 @@ def predict_cloud(text):
 def predict_extension(author: str = Body(...),
                       content: str = Body(...),
                       url: str = Body(...)) -> None:
-    return predict_cloud_proba_api(content)
+    return predict_all(content, source='local')
 
 
 ## Test API endpoints for feature engineering prediction

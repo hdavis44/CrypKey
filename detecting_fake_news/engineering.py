@@ -184,28 +184,38 @@ def get_extended_eng_features_df(raw_text: pd.Series, preproc_text=None):
                              'amt_?', 'amt_capitalized', 'amt_upper']
     engineered_df = engineered_df.astype(float)
 
+    print(colored(f'* after pre-preprocessed = {engineered_df.shape}', 'red'))
+
     # Run preprocessing on text - or use from imput
     if isinstance(preproc_text, pd.Series):
         preprocessed_df = preproc_text
     else:
         preprocessed_df = TextPreprocessor().transform(raw_text)
 
+    print(colored(f'* pre-preprocessed = {engineered_df.shape}', 'blue'))
+
     # Feature extraction on preprocessed text
     engineered_df['pop_word_freq'] = preprocessed_df.apply(
         _post_proc_engineering)
 
+    print(colored(f'* after pre + post = {engineered_df.shape}', 'red'))
+
     # Create or Load Spacy engineering features
     try:
-        X_spacy = get_local_data(data_file_name='us_election_eng.csv___')
+        X_spacy = get_local_data(data_file_name='comb_X_preproce....csv')
         X_spacy = X_spacy.iloc[:len(raw_text), 1:]
         #X_spacy.drop(columns=['Unnamed: 0'], inplace=True)
     except (IOError, AttributeError) as e:
         X_spacy = get_engineered_df(raw_text)
         print(colored('- New data has been created', 'green'))
 
+    print(colored(f'* X-spacy = {X_spacy.shape}', 'green'))
+
 
     # Concatinate all features
     final_eng_df = pd.concat([X_spacy, engineered_df], axis=1)
+
+    print(colored(f'* final_eng_df = {final_eng_df.shape}', 'red'))
 
     # return dataframe
     return final_eng_df
@@ -213,8 +223,22 @@ def get_extended_eng_features_df(raw_text: pd.Series, preproc_text=None):
 
 if __name__ == '__main__':
     from detecting_fake_news.data import get_local_data
+
+    start_time = time.time()
+
     df = get_local_data(data_file_name='us_election.csv', nrows=110)
+    print('START - with shape', df.shape)
 
-    eng_df = get_engineered_df(df['text'])
+    eng_df = get_extended_eng_features_df(df['text'])
 
-    print(eng_df.head(3))
+    print('DONE - with shape', eng_df.shape)
+    time_diff = round((time.time() - start_time), 4)
+    print(colored(f'* Execution time = {time_diff} sec.', 'green'))
+
+
+    ## CODE FOR RUN ON GOOGLE VM ##
+    ## - remember to comment out / change local imports and their use...
+
+    # eng_df = get_engineered_df(df['text'])
+    # df = pd.read_csv('combined_fake_true.csv')
+    # eng_df.to_csv('combined_eng_feat.csv', index=False)
