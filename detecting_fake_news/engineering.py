@@ -3,10 +3,11 @@ import numpy as np
 from termcolor import colored
 import time
 
-start_time = time.time()
+# start_time = time.time()
 import spacy
-time_diff = round((time.time() - start_time), 4)
-print(colored(f'* Importing SPACY took {time_diff} sec.', 'blue'))
+nlp = spacy.load("en_core_web_sm")
+# time_diff = round((time.time() - start_time), 4)
+# print(colored(f'* Importing SPACY took {time_diff} sec.', 'blue'))
 
 from detecting_fake_news.preprocessing import TextPreprocessor
 from detecting_fake_news.data import get_local_data
@@ -16,11 +17,17 @@ from detecting_fake_news.data import get_local_data
 # pip install spacy==3.2.0
 # python -m spacy download en_core_web_sm
 
+counter = 1
 
 def spacy_function(txt):
     result = ""
-    nlp = spacy.load("en_core_web_sm")
+    # nlp = spacy.load("en_core_web_sm")
     doc = nlp(txt)
+
+    global counter
+    if counter % 500 == 0:
+        print(colored(f'* COUNT: {counter}', 'yellow'))
+    counter += 1
 
     # characters
     tot_chars = sum([len(token.lemma_) for token in doc])
@@ -184,61 +191,38 @@ def get_extended_eng_features_df(raw_text: pd.Series, preproc_text=None):
                              'amt_?', 'amt_capitalized', 'amt_upper']
     engineered_df = engineered_df.astype(float)
 
-    print(colored(f'* after pre-preprocessed = {engineered_df.shape}', 'red'))
-
-    # Run preprocessing on text - or use from imput
+    # Run preprocessing on text - if not given as input
     if isinstance(preproc_text, pd.Series):
         preprocessed_df = preproc_text
     else:
         preprocessed_df = TextPreprocessor().transform(raw_text)
 
-    print(colored(f'* pre-preprocessed = {engineered_df.shape}', 'blue'))
-
     # Feature extraction on preprocessed text
     engineered_df['pop_word_freq'] = preprocessed_df.apply(
         _post_proc_engineering)
 
-    print(colored(f'* after pre + post = {engineered_df.shape}', 'red'))
-
-    # Create or Load Spacy engineering features
-    try:
-        X_spacy = get_local_data(data_file_name='comb_X_preproce....csv')
-        X_spacy = X_spacy.iloc[:len(raw_text), 1:]
-        #X_spacy.drop(columns=['Unnamed: 0'], inplace=True)
-    except (IOError, AttributeError) as e:
-        X_spacy = get_engineered_df(raw_text)
-        print(colored('- New data has been created', 'green'))
-
-    print(colored(f'* X-spacy = {X_spacy.shape}', 'green'))
-
+    # Create Spacy engineering features
+    X_spacy = get_engineered_df(raw_text)
 
     # Concatinate all features
     final_eng_df = pd.concat([X_spacy, engineered_df], axis=1)
 
-    print(colored(f'* final_eng_df = {final_eng_df.shape}', 'red'))
+    print(colored(f'* Shape of final_eng_df = {final_eng_df.shape}', 'green'))
 
     # return dataframe
     return final_eng_df
 
 
 if __name__ == '__main__':
-    from detecting_fake_news.data import get_local_data
 
-    start_time = time.time()
+    # start_time = time.time()
 
-    df = get_local_data(data_file_name='us_election.csv', nrows=110)
-    print('START - with shape', df.shape)
-
-    eng_df = get_extended_eng_features_df(df['text'])
-
-    print('DONE - with shape', eng_df.shape)
-    time_diff = round((time.time() - start_time), 4)
-    print(colored(f'* Execution time = {time_diff} sec.', 'green'))
-
-
-    ## CODE FOR RUN ON GOOGLE VM ##
-    ## - remember to comment out / change local imports and their use...
+    df = pd.read_csv('raw_data/combined_fake_true.csv')
 
     # eng_df = get_engineered_df(df['text'])
-    # df = pd.read_csv('combined_fake_true.csv')
-    # eng_df.to_csv('combined_eng_feat.csv', index=False)
+    eng_df = get_extended_eng_features_df(df['text'].head(502))
+
+    eng_df.to_csv('raw_data/combined_eng_feat_X.csv', index=False)
+
+    # time_diff = round((time.time() - start_time), 4)
+    # print(colored(f'* Execution time = {time_diff} sec.', 'green'))

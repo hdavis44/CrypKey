@@ -13,16 +13,14 @@ from detecting_fake_news.engineering import get_extended_eng_features_df
 #function that make the api home page, it is used in fast.py
 def home_page_api():
     return {
-        '/test':
+        '/test [GET]':
         'For testing if the API is working, add 2 parameter. num1=NUMBER, num2=NUMBER, retrun the sum of both numbers',
-        '/predict_local':
-        'For running the API using the model stored localy, add 1 parameter. text=TEXT, return 1=fake or 0=real',
-        '/predict_cloud':
-        'For running the API using the model from the cloud, add 1 parameter. text=TEXT, return 1=fake or 0=real',
-        '/predict_proba_local':
-        'For running the API using the model stored localy, add 1 parameter. text=TEXT, return proba of fake',
-        '/predict_proba_cloud':
-        'For running the API using the model from the cloud, add 1 parameter. text=TEXT, return proba of fake'
+        '//predict_all_post [POST]':
+        'For running the API using all models, stored localy: post text=TEXT, return 1=fake or 0=real',
+        '/predict_all_cloud [GET]':
+        'For running the API using all models, downloading from cloud to local server disk: add 1 parameter. text=TEXT, return proba of fake',
+        '/predict_all_local [GET]':
+        'For running the API using all models, from local server disk: add 1 parameter. text=TEXT, return proba of fake'
     }
 
 
